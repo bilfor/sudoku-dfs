@@ -1,21 +1,34 @@
 public class SudokuSolver_Billy implements SudokuSolver {
 
   public int[][] solve_dfs(int i, int j, int[][] cells) {
+    int[] empty_coords;
+    //check_complete();
+    empty_coords = find_empty(i,j,cells);
+    for(int val = 1; val < 10; val++) {
+      if (check_move(empty_coords[0],empty_coords[1],val,cells) == true) {
+        cells[i][j] = val;
+        break;
+      }
+    }
+    solve_dfs(empty_coords[0],empty_coords[1],cells);
+    return cells;
+  }
+  
+  public int[] find_empty(int i, int j, int[][] cells) {
+    int[] coords = new int[2];
     for(int row = i; row < 9; row++) {
       for(int col = j; col < 9; col++) { 
         if(cells[row][col] == 0) {
-          for(val = 1; val < 10; val++) {
-            if (check_move(i,j,val,cells) == true) cells[i][j] = val;
-          }
+          coords[0] = i;
+          coords[1] = j; 
+          return coords;
         }
       }
-    }
-    solve_dfs(
-    return null;
+    } 
+    coords[0] = 10;
+    coords[1] = 10;
+    return coords;
   }
-  
-  public int[] findEmpty(int[][] cells) {
-  
 
   public boolean check_move(int i, int j, int val, int[][] cells) {
  
