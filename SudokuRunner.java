@@ -7,7 +7,7 @@ public class SudokuRunner {
 		 
 		SudokuSolver test_ps=new SudokuSolver_Billy();
 		
-		matrix = SudokuUtil.load_problem("./Test_Problem_Hard.txt");
+		matrix = SudokuUtil.load_problem("./Test_Problem_Hardest.txt");
 		SudokuUtil.write_matrix(matrix);
 		int[][] sol= test_ps.solve_dfs(0, 0, matrix); 
 		SudokuUtil.write_matrix(sol);

@@ -19,4 +19,5 @@ public interface SudokuSolver {
 	 */
 	 public boolean check_move(int i, int j, int val, int[][] cells);
 
+
 }
