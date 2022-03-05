@@ -1,83 +1,103 @@
-public class SudokuSolver_Billy implements SudokuSolver {
+public class SudokuSolver_JackDempster implements SudokuSolver {
+    private boolean flag = false;
 
-  public int[][] solve_dfs(int i, int j, int[][] cells) {
-    int[] coords = find_empty(i,j,cells);
-    if(coords[0] == 10 && coords[1] == 10) return cells; 
-    for(int val = 1; val < 10; val++) {
-      if(check_move(i,j,val,cells)) {
-        cells[i][j] = val;
-        //inferences <- INFERENCE(csp,var,assignment)
-        //if (inferences != failure) {
-        //  add inferences to csp
-        //  result <- solve_dfs(csp,assignment)
-        //  if (result != failure)
-        //    return result
-        //    remove inferences from csp
-        //    remove {var=value} from assignment
-    //return failure
-      }
-      break;
-    } //unroll
-    solve_dfs(i,j,cells);
-    return cells;
-  }
-  
-  private int[] find_empty(int i, int j, int[][] cells) {
-    int[] coords = new int[2];
-    for(int row = i; row < 9; row++) {
-      for(int col = j; col < 9; col++) { 
-        if(cells[row][col] == 0) {
-          coords[0] = row;
-          coords[1] = col; 
-          return coords;
+    private int[] find_empty(int i, int j, int[][] cells) {
+        int[] coords = new int[2];
+        for(int row = i; row < 9; row++) {
+            for(int col = j; col < 9; col++) {
+                if(cells[row][col] == 0) {
+                    coords[0] = row;
+                    coords[1] = col;
+                    return coords;
+                }
+            }
         }
-      }
-    } 
-    coords[0] = 10;
-    coords[1] = 10;
-    return coords;
-  }
-  
-
-  public boolean check_move(int i, int j, int val, int[][] cells) {
- 
-    int i2;
-    int j2; 
-    int row;
-    int col;
-    int row_rem = i / 3;
-    int col_rem = j / 3;
-  
-    switch(row_rem) {
-      case 0: i2 = 0; break; 
-      case 1: i2 = 3; break;
-      default: i2 = 6; break;
+        coords[0] = 10;
+        coords[1] = 10;
+        return coords;
     }
 
-    switch(col_rem) {
-      case 0: j2 = 0; break; 
-      case 1: j2 = 3; break;
-      default: j2 = 6; break;
+    /**
+     * Solve the puzzle using depth first search
+     * @param i: the current row index
+     * @param j: the current column index
+     * @param cells: the current board configuration
+     * @return the board configuration of the solution, void if no solution found
+     */
+    public int[][] solve_dfs (int i, int j, int[][] cells) {
+        int[] coords = find_empty(i,j,cells);
+        if(coords[0] == 10 || coords[1] == 10) {
+            flag = true;
+            return cells;
+        }
+
+        for(int val = 1; val < 10; val++) {
+            if(!flag) cells[coords[0]][coords[1]] = val;
+            if(check_move(coords[0], coords[1], val, cells)) {
+                cells = solve_dfs(i, j, cells);
+            }
+        }
+        if(!flag) cells[coords[0]][coords[1]] = 0;
+
+        return cells;
     }
 
-    for (col=i2; col<i2+3; col++)
-    {
-      for (row=j2; row<j2+3; row++)
-      {
-        if(val == cells[row][col] && row != i && col != j) return false;  
-      }
-    }
+    /**
+     * Check whether the current move (putting val at the position [i,j]) is legal
+     * @param i: the current row index
+     * @param j: the current column index
+     * @param val: the current value assignment
+     * @param cells: the current board configuration
+     * @return true if legal. Otherwise false
+     */
+    public boolean check_move(int i, int j, int val, int[][] cells) {
+        int box_row = i/3;
+        int box_col = j/3;
+        int row_start;
+        int col_start;
+        int col;
+        int row;
 
-    for(col=0; col < cells[0].length; col++)
-    {
-      if(val == cells[i][col] && col != j) return false; 
-    }
+        switch(box_row) {
+            case 0:
+                row_start = 0;
+                break;
+            case 1:
+                row_start = 3;
+                break;
+            default:
+                row_start = 6;
+                break;
+        }
+        switch(box_col) {
+            case 0:
+                col_start = 0;
+                break;
+            case 1:
+                col_start = 3;
+                break;
+            default:
+                col_start = 6;
+                break;
+        }
+        for(col = col_start; col < col_start + 3; col++) {
+            for(row = row_start; row < row_start + 3; row++) {
+                if(val == cells[row][col] && row != i && col != j) {
+                    return false;
+                }
+            }
+        }
+        for(col = 0; col < cells[0].length; col++) {
+            if(cells[i][col] == val && col != j) {
+                return false;
+            }
+        }
+        for(row = 0; row < cells.length; row++) {
+            if(cells[row][j] == val && row != i) {
+                return false;
+            }
+        }
 
-    for(row=0; row < cells.length; row++)
-    {
-      if(val == cells[row][j] && row != i) return false; 
+        return true;
     }
-
-   return true; 
-  }
 }
